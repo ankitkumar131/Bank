@@ -2,16 +2,16 @@ import { branches } from '@/lib/data';
 
 export default function Branches() {
   return (
-    <main className="min-h-screen bg-gray-50 py-16">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-burgundy mb-4">Our Branch Network</h1>
+    <main className="min-h-screen bg-gray-50 py-16 md:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12 md:mb-16">
+          <h1 className="text-3xl sm:text-4xl font-bold text-burgundy mb-4">Our Branch Network</h1>
           <p className="text-lg text-charcoal max-w-2xl mx-auto">
             Find a branch near you to access our comprehensive range of banking services.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 max-w-6xl mx-auto">
           {branches.map((branch) => (
             <div key={branch.id} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-100 flex flex-col">
               <div className="p-6 flex-grow">
@@ -32,7 +32,7 @@ export default function Branches() {
                   </div>
                 </div>
               </div>
-              <div className="w-full h-48 bg-gray-200">
+              <div className="w-full h-56 sm:h-64 bg-gray-200">
                 <iframe
                   src={branch.mapUrl}
                   width="100%"
@@ -49,7 +49,7 @@ export default function Branches() {
           ))}
         </div>
 
-        <div className="text-center text-sm text-gray-500 mt-12">
+        <div className="text-center text-sm text-gray-500 mt-12 md:mt-16">
           <p>Note: Addresses, phone numbers, and locations are placeholder data for demonstration purposes.</p>
         </div>
       </div>

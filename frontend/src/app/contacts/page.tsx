@@ -84,7 +84,7 @@ function ContactFormContent() {
   };
 
   return (
-    <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100" id="service-request">
+    <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-100" id="service-request">
       <h2 className="text-3xl font-heading font-bold text-burgundy mb-2 text-center">Request for a Service</h2>
       <p className="text-charcoal-500 text-center mb-8">Fill out the form below and our team will get back to you shortly.</p>
       
@@ -183,9 +183,9 @@ export default function ContactsPage() {
   return (
     <div className="min-h-screen bg-warm-50">
       {/* Page Heading */}
-      <div className="bg-burgundy py-16 px-4">
+      <div className="bg-burgundy py-16 md:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-heading font-bold text-white mb-4">Contact Us</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-heading font-bold text-white mb-4">Contact Us</h1>
           <p className="text-lg text-burgundy-200 max-w-2xl mx-auto">
             We are here to assist you. Reach out to us via phone, email, or visit our head office for any inquiries or support.
           </p>
@@ -236,8 +236,8 @@ export default function ContactsPage() {
       </div>
 
       {/* Map & Form Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-12">
           {/* Map Section */}
           <div className="flex flex-col">
             <h2 className="text-3xl font-heading font-bold text-charcoal-900 mb-2">Head Office Location</h2>

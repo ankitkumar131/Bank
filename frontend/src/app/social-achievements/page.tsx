@@ -18,16 +18,16 @@ export default function SocialAchievements() {
   }, [selectedActivity]);
 
   return (
-    <main className="min-h-screen bg-gray-50 py-16">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-burgundy mb-4">Social Achievements & Activities</h1>
+    <main className="min-h-screen bg-gray-50 py-16 md:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12 md:mb-16">
+          <h1 className="text-3xl sm:text-4xl font-bold text-burgundy mb-4">Social Achievements & Activities</h1>
           <p className="text-lg text-charcoal max-w-2xl mx-auto">
             Committed to community development and social welfare through various initiatives and programs.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {activities.map((activity) => (
             <div 
               key={activity.id}
@@ -35,9 +35,10 @@ export default function SocialAchievements() {
               onClick={() => setSelectedActivity(activity)}
             >
               <img 
-                src={activity.image || "https://images.unsplash.com/photo-1593113565214-80afcb4a47d1?auto=format&fit=crop&q=80&w=800"} 
+                src={activity.image || "/images/placeholder.svg"} 
                 alt={activity.title}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                onError={(e) => { (e.target as HTMLImageElement).src = '/images/placeholder.svg'; }}
               />
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
                 <h3 className="text-white text-center font-bold text-lg">{activity.title}</h3>
@@ -66,13 +67,14 @@ export default function SocialAchievements() {
             
             <div className="w-full md:w-1/2 h-64 md:h-auto">
               <img 
-                src={selectedActivity.image || "https://images.unsplash.com/photo-1593113565214-80afcb4a47d1?auto=format&fit=crop&q=80&w=800"} 
+                src={selectedActivity.image || "/images/placeholder.svg"} 
                 alt={selectedActivity.title}
                 className="w-full h-full object-cover"
+                onError={(e) => { (e.target as HTMLImageElement).src = '/images/placeholder.svg'; }}
               />
             </div>
             
-            <div className="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto">
+            <div className="w-full md:w-1/2 p-6 sm:p-8 md:p-12 overflow-y-auto">
               <div className="text-orange font-semibold mb-2">{selectedActivity.date || 'Recent'}</div>
               <h2 className="text-3xl font-bold text-burgundy mb-6">{selectedActivity.title}</h2>
               <div className="prose prose-lg text-gray-700">

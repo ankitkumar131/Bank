@@ -4,7 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { heroSlides, depositSchemes, loanSchemes, otherServices, activities } from '@/lib/data';
-import { ChevronLeft, ChevronRight, X, ArrowRight, ShieldCheck, TrendingUp, Users, Award, Landmark, Percent, Briefcase, FileText, CheckCircle } from 'lucide-react';
+import ServiceCard from '@/components/ServiceCard';
+import { ChevronLeft, ChevronRight, X, ArrowRight, ShieldCheck, TrendingUp, Users, Award, Landmark, Percent, Briefcase, CheckCircle } from 'lucide-react';
 
 export default function HomePage() {
   // --- Carousel State ---
@@ -51,19 +52,19 @@ export default function HomePage() {
       >
         {heroSlides.map((slide: any, index: number) => (
           <div
-            key={slide.id}
+            key={index}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
               index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
             }`}
           >
             <div 
               className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${slide.imageUrl})` }}
+              style={{ backgroundImage: `url(${slide.image || '/images/placeholder.svg'})` }}
             >
               <div className="absolute inset-0 bg-black/50" /> {/* Dark overlay */}
             </div>
             <div className="absolute bottom-0 left-0 p-6 md:p-12 text-white md:w-2/3">
-              <h2 className="text-3xl md:text-5xl font-bold mb-2 md:mb-4">{slide.title}</h2>
+              <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-2 md:mb-4">{slide.heading}</h2>
               <p className="text-sm md:text-xl">{slide.description}</p>
             </div>
           </div>
@@ -101,8 +102,8 @@ export default function HomePage() {
       </section>
 
       {/* 2. STATS BAR */}
-      <section className="bg-burgundy text-white py-8">
-        <div className="container mx-auto px-4">
+      <section className="bg-burgundy text-white py-10 md:py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div className="flex flex-col items-center">
               <Award className="w-8 h-8 mb-2 text-golden" />
@@ -129,9 +130,9 @@ export default function HomePage() {
       </section>
 
       {/* 3. ABOUT THE SOCIETY */}
-      <section className="py-16 md:py-20 bg-warm">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center gap-12">
+      <section className="py-16 md:py-24 bg-warm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
             <div className="w-full md:w-1/2">
               <h2 className="text-3xl md:text-4xl font-bold text-burgundy mb-6">
                 Rooted in the Soil, Committed to Your Financial Autonomy
@@ -164,15 +165,15 @@ export default function HomePage() {
               
               <Link 
                 href="/services"
-                className="inline-flex items-center px-6 py-3 bg-orange text-white font-semibold rounded hover:bg-burgundy transition-colors shadow-md"
+                className="inline-flex items-center px-6 py-3 bg-orange text-white font-semibold rounded-xl hover:bg-burgundy transition-colors shadow-md"
               >
                 View Our Services <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </div>
             <div className="w-full md:w-1/2">
-              <div className="relative h-[400px] w-full rounded-lg overflow-hidden shadow-xl">
+              <div className="relative h-[280px] sm:h-[350px] md:h-[400px] w-full rounded-lg overflow-hidden shadow-xl">
                 <Image 
-                  src="https://images.unsplash.com/photo-1556740714-a8395b3bf30f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                  src="/images/general/about.svg"
                   alt="Community Banking"
                   fill
                   className="object-cover"
@@ -184,76 +185,103 @@ export default function HomePage() {
       </section>
 
       {/* 4. SERVICES SECTION */}
-      <section className="py-16 md:py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+      <section className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 md:mb-16">
+            <span className="inline-block px-4 py-1.5 mb-4 text-xs font-bold uppercase tracking-widest text-burgundy bg-burgundy-50 border border-burgundy/15 rounded-full">
+              What We Offer
+            </span>
             <h2 className="text-3xl md:text-4xl font-bold text-burgundy mb-4">Our Banking & Financial Services</h2>
-            <div className="w-24 h-1 bg-orange mx-auto"></div>
+            <p className="text-charcoal-600 max-w-2xl mx-auto">
+              Simple, secure and community-first banking — pick a scheme and request it in one click.
+            </p>
+            <div className="w-24 h-1 bg-gradient-to-r from-burgundy via-orange to-golden mx-auto mt-6 rounded-full"></div>
           </div>
 
           {/* Deposit Schemes */}
-          <div className="mb-16">
-            <h3 className="text-2xl font-bold text-charcoal mb-8 flex items-center">
-              <Landmark className="mr-3 text-burgundy" /> Deposit Schemes
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="mb-14 md:mb-16">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-burgundy-700 to-burgundy-950 text-white flex items-center justify-center shadow-md">
+                <Landmark size={20} />
+              </div>
+              <h3 className="text-2xl font-bold text-charcoal-900">Deposit Schemes</h3>
+              <div className="flex-grow h-px bg-gray-200 ml-2 hidden sm:block" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {depositSchemes.slice(0, 3).map((service: any) => (
-                <ServiceCard key={service.id} service={service} />
+                <ServiceCard key={service.id} service={service} accent="deposit" />
               ))}
             </div>
           </div>
 
           {/* Loan Schemes */}
-          <div className="mb-16">
-            <h3 className="text-2xl font-bold text-charcoal mb-8 flex items-center">
-              <Percent className="mr-3 text-burgundy" /> Loan Schemes
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="mb-14 md:mb-16">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-orange-800 text-white flex items-center justify-center shadow-md">
+                <Percent size={20} />
+              </div>
+              <h3 className="text-2xl font-bold text-charcoal-900">Loan Schemes</h3>
+              <div className="flex-grow h-px bg-gray-200 ml-2 hidden sm:block" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {loanSchemes.slice(0, 3).map((service: any) => (
-                <ServiceCard key={service.id} service={service} />
+                <ServiceCard key={service.id} service={service} accent="loan" />
               ))}
             </div>
           </div>
 
           {/* Other Services */}
-          <div>
-            <h3 className="text-2xl font-bold text-charcoal mb-8 flex items-center">
-              <Briefcase className="mr-3 text-burgundy" /> Other Services
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="mb-14">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-golden-500 to-golden-700 text-white flex items-center justify-center shadow-md">
+                <Briefcase size={20} />
+              </div>
+              <h3 className="text-2xl font-bold text-charcoal-900">Other Services</h3>
+              <div className="flex-grow h-px bg-gray-200 ml-2 hidden sm:block" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {otherServices.slice(0, 3).map((service: any) => (
-                <ServiceCard key={service.id} service={service} />
+                <ServiceCard key={service.id} service={service} accent="other" />
               ))}
             </div>
+          </div>
+
+          <div className="text-center mt-4">
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-burgundy text-white font-semibold rounded-xl hover:bg-burgundy-800 transition-all shadow-md hover:shadow-lg"
+            >
+              View All Services <ArrowRight className="w-4 h-4" />
+            </Link>
           </div>
         </div>
       </section>
 
       {/* 5. SOCIAL ACHIEVEMENTS PREVIEW */}
-      <section className="py-16 md:py-20 bg-warm">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-end mb-10">
+      <section className="py-16 md:py-24 bg-warm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between md:items-end gap-6 mb-12">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-burgundy mb-4">Social Achievements & Activities</h2>
-              <div className="w-24 h-1 bg-orange"></div>
+              <div className="w-24 h-1 bg-orange rounded-full"></div>
             </div>
             <Link 
               href="/social-achievements"
-              className="mt-6 md:mt-0 inline-flex items-center text-burgundy font-semibold hover:text-orange transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 border-2 border-burgundy/20 text-burgundy font-semibold text-sm rounded-xl hover:bg-burgundy hover:text-white hover:border-burgundy transition-all whitespace-nowrap"
             >
-              View All Activities <ArrowRight className="ml-1 w-4 h-4" />
+              View All Activities <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {activities.slice(0, 6).map((activity: any) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {activities.slice(0, 8).map((activity: any) => (
               <div 
                 key={activity.id}
                 className="group relative h-48 md:h-64 rounded-lg overflow-hidden cursor-pointer shadow-md"
                 onClick={() => setSelectedActivity(activity)}
               >
                 <Image
-                  src={activity.imageUrl}
+                  src={activity.image || '/images/placeholder.svg'}
                   alt={activity.title}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -270,16 +298,16 @@ export default function HomePage() {
       </section>
 
       {/* 6. BOARD OF DIRECTORS PREVIEW */}
-      <section className="py-16 md:py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+      <section className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 md:mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-burgundy mb-4">Our Board of Directors (2026 – 2031)</h2>
             <div className="w-24 h-1 bg-orange mx-auto mb-8"></div>
             
             {/* Group Photo */}
-            <div className="relative w-full max-w-4xl mx-auto h-[300px] md:h-[450px] rounded-lg overflow-hidden shadow-lg mb-12">
+            <div className="relative w-full max-w-4xl mx-auto h-[250px] sm:h-[300px] md:h-[450px] rounded-lg overflow-hidden shadow-lg mb-12">
               <Image 
-                src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                src="/images/general/board-group.svg"
                 alt="Board of Directors Group Photo"
                 fill
                 className="object-cover"
@@ -292,24 +320,24 @@ export default function HomePage() {
             <DirectorCard 
               name="Shri. Example Chairman" 
               designation="Chairman" 
-              image="https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+              image="/images/general/chairman.svg" 
             />
             <DirectorCard 
               name="Smt. Example Vice Chair" 
               designation="Vice Chairman" 
-              image="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+              image="/images/general/vice-chair.svg" 
             />
             <DirectorCard 
               name="Shri. Example Secretary" 
               designation="Secretary" 
-              image="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" 
+              image="/images/general/secretary.svg" 
             />
           </div>
 
           <div className="text-center mt-12">
             <Link 
               href="/bod"
-              className="inline-flex items-center px-6 py-3 border-2 border-burgundy text-burgundy font-semibold rounded hover:bg-burgundy hover:text-white transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 border-2 border-burgundy text-burgundy font-semibold rounded-xl hover:bg-burgundy hover:text-white transition-colors"
             >
               View All BoD's
             </Link>
@@ -335,7 +363,7 @@ export default function HomePage() {
             
             <div className="relative w-full h-64 md:h-96">
               <Image
-                src={selectedActivity.imageUrl}
+                src={selectedActivity.image || '/images/placeholder.svg'}
                 alt={selectedActivity.title}
                 fill
                 className="object-cover"
@@ -357,25 +385,6 @@ export default function HomePage() {
 }
 
 // --- HELPER COMPONENTS ---
-
-function ServiceCard({ service }: { service: any }) {
-  return (
-    <div className="bg-warm rounded-lg p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-golden/30 flex flex-col h-full">
-      <div className="w-12 h-12 bg-burgundy/10 text-burgundy rounded-lg flex items-center justify-center mb-4">
-        <FileText size={24} />
-      </div>
-      <h4 className="text-xl font-bold text-burgundy mb-3">{service.title}</h4>
-      <p className="text-charcoal text-sm mb-6 flex-grow">{service.description}</p>
-      
-      <Link 
-        href={`/contacts?service=${service.id}`}
-        className="inline-flex items-center text-sm font-semibold text-orange hover:text-burgundy transition-colors mt-auto w-fit"
-      >
-        Request Service <ArrowRight className="ml-1 w-4 h-4" />
-      </Link>
-    </div>
-  );
-}
 
 function DirectorCard({ name, designation, image }: { name: string, designation: string, image: string }) {
   return (

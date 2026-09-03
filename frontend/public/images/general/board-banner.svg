@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2000" height="500" viewBox="0 0 2000 500">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3A2A5F"/>
+      <stop offset="1" stop-color="#1A3A5F"/>
+    </linearGradient>
+  </defs>
+  <rect width="2000" height="500" fill="url(#g)"/>
+  <circle cx="240" cy="100" r="175" fill="#FFFFFF" opacity="0.08"/>
+  <circle cx="1760" cy="425" r="225" fill="#000000" opacity="0.10"/>
+  <rect x="960" y="340" width="80" height="5" rx="2.5" fill="#F5B301"/>
+  <text x="50%" y="230" font-family="Arial,Helvetica,sans-serif" font-size="110" font-weight="700" fill="#FFFFFF" text-anchor="middle">Board of Directors</text>
+  <text x="50%" y="310" font-family="Arial,Helvetica,sans-serif" font-size="44" fill="#FFFFFF" opacity="0.92" text-anchor="middle">2026 – 2031 — Sample Banner</text>
+</svg>
