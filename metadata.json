@@ -1,0 +1,6 @@
+{
+  "name": "Parra Verla Canca Co-operative Society",
+  "description": "Multipurpose Primary Agriculture Co-operative Society Ltd. providing comprehensive banking and agricultural services.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

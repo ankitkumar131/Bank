@@ -1,0 +1,66 @@
+version: '3.8'
+
+# ==============================================================================
+# Docker Compose - Full-Stack Banking Application Infrastructure
+#
+# Services:
+#   - postgres: PostgreSQL 16 database with healthcheck and persistent volume
+#   - pgadmin:  pgAdmin 4 web UI for database management (port 5050)
+#
+# Usage:
+#   Start services:   docker compose up -d
+#   Stop services:    docker compose down
+#   View logs:        docker compose logs -f postgres
+# ==============================================================================
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bank_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-bank_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-bank_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - bank_network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: bank_pgadmin
+    restart: unless-stopped
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@bank.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin123}
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - bank_network
+
+volumes:
+  postgres_data:
+    driver: local
+    name: bank_postgres_data
+  pgadmin_data:
+    driver: local
+    name: bank_pgadmin_data
+
+networks:
+  bank_network:
+    driver: bridge
+    name: bank_network

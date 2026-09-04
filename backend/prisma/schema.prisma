@@ -1,0 +1,69 @@
+// Prisma Schema for Banking Application
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  CUSTOMER
+}
+
+enum AccountType {
+  SAVINGS
+  CHECKING
+}
+
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  firstName String
+  lastName  String
+  role      UserRole  @default(CUSTOMER)
+  accounts  Account[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("users")
+}
+
+model Account {
+  id               Int             @id @default(autoincrement())
+  accountNumber    String          @unique
+  balance          Decimal         @default(0) @db.Decimal(15, 2)
+  accountType      AccountType
+  userId           Int
+  user             User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fromTransactions Transaction[]   @relation("FromAccount")
+  toTransactions   Transaction[]   @relation("ToAccount")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@map("accounts")
+}
+
+model Transaction {
+  id            Int             @id @default(autoincrement())
+  amount        Decimal         @db.Decimal(15, 2)
+  type          TransactionType
+  description   String?
+  fromAccountId Int?
+  toAccountId   Int?
+  fromAccount   Account?        @relation("FromAccount", fields: [fromAccountId], references: [id])
+  toAccount     Account?        @relation("ToAccount", fields: [toAccountId], references: [id])
+  createdAt     DateTime        @default(now())
+
+  @@map("transactions")
+}

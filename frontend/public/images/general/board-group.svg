@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1A3A5F"/>
+      <stop offset="1" stop-color="#2E7D6F"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="500" fill="url(#g)"/>
+  <circle cx="144" cy="100" r="175" fill="#FFFFFF" opacity="0.08"/>
+  <circle cx="1056" cy="425" r="225" fill="#000000" opacity="0.10"/>
+  <rect x="560" y="340" width="80" height="5" rx="2.5" fill="#F5B301"/>
+  <text x="50%" y="230" font-family="Arial,Helvetica,sans-serif" font-size="66" font-weight="700" fill="#FFFFFF" text-anchor="middle">Board of Directors</text>
+  <text x="50%" y="310" font-family="Arial,Helvetica,sans-serif" font-size="26" fill="#FFFFFF" opacity="0.92" text-anchor="middle">2026 – 2031 — Sample Group Photo</text>
+</svg>
