@@ -1,789 +1,493 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { 
-  depositSchemes, 
-  loanSchemes, 
-  otherServices, 
-  activities, 
-  directors, 
-  branches,
-  serviceOptions 
-} from '@/lib/data';
+import { heroSlides, depositSchemes, loanSchemes, otherServices, activities } from '@/lib/data';
 import ServiceCard from '@/components/ServiceCard';
-import { 
-  ShieldCheck, 
-  Users, 
-  Landmark, 
-  ArrowRight, 
-  Phone, 
-  Clock, 
-  MapPin, 
-  Calendar,
-  CheckCircle2,
-  Sparkles,
-  Send
+import {
+  ChevronLeft,
+  ChevronRight,
+  X,
+  ArrowRight,
+  ShieldCheck,
+  TrendingUp,
+  Users,
+  Award,
+  Landmark,
+  Percent,
+  Briefcase,
+  CheckCircle,
 } from 'lucide-react';
 
-export default function HomePage() {
-  // Quick request form state on home page
-  const [formName, setFormName] = useState('');
-  const [formPhone, setFormPhone] = useState('');
-  const [formService, setFormService] = useState('saving-deposit');
-  const [formBranch, setFormBranch] = useState('Parra Main Office');
-  const [formNotes, setFormNotes] = useState('');
-  const [formSubmitted, setFormSubmitted] = useState(false);
+function DirectorCard({
+  name,
+  designation,
+  image,
+}: {
+  name: string;
+  designation: string;
+  image: string;
+}) {
+  return (
+    <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-200/80 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col items-center p-6 text-center">
+      <div className="relative w-36 h-36 rounded-full overflow-hidden mb-4 border-4 border-slate-100 group-hover:border-navy-200 transition-colors shadow-inner">
+        <Image
+          src={image || '/images/placeholder.svg'}
+          alt={name}
+          fill
+          className="object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+      </div>
+      <h3 className="text-lg font-bold text-slate-900 group-hover:text-navy-900 transition-colors">
+        {name}
+      </h3>
+      <span className="inline-block mt-1 px-3 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+        {designation}
+      </span>
+    </div>
+  );
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formName || !formPhone) return;
-    setFormSubmitted(true);
-  };
+export default function HomePage() {
+  // --- Carousel State ---
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev === heroSlides.length - 1 ? 0 : prev + 1));
+  }, []);
+
+  const prevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1));
+  }, []);
+
+  useEffect(() => {
+    if (!isHovered) {
+      const timer = setInterval(nextSlide, 5000);
+      return () => clearInterval(timer);
+    }
+  }, [isHovered, nextSlide]);
+
+  // --- Modal State ---
+  const [selectedActivity, setSelectedActivity] = useState<any>(null);
+
+  // Prevent scroll when modal is open
+  useEffect(() => {
+    if (selectedActivity) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [selectedActivity]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-surface selection:bg-primary/10 selection:text-primary">
-      
-      {/* 1. HERO SECTION: Scholarly Authority & Generous Whitespace */}
-      <section className="relative pt-12 pb-16 lg:pt-20 lg:pb-24 overflow-hidden">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            
-            {/* Left Column: Authoritative Editorial Narrative */}
-            <div className="lg:col-span-7 space-y-6">
-              
-              {/* Archival Pill */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-tertiary-50 text-tertiary text-xs font-label font-bold tracking-wider uppercase">
-                <Sparkles className="w-3.5 h-3.5 text-tertiary" />
-                <span>A Grade Statutory Audit Govt Recognized Society</span>
-              </div>
-
-              {/* Serif Headline */}
-              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-charcoal-900 leading-[1.15]">
-                Rooted in Soil, Empowering Community: Six Decades of Co-operative Banking Excellence
-              </h1>
-
-              {/* Scholarly Narrative */}
-              <p className="text-base sm:text-lg text-charcoal-600 leading-relaxed font-sans max-w-2xl">
-                Established on the steadfast Vedic principle of <span className="italic font-serif text-charcoal-900">&lsquo;परस्परं भावयन्तः&rsquo;</span> (thriving and deliberating together in unity), Parra Verla Canca PACS safeguards generations of rural wealth, cultivates agrarian prosperity, and provides modern banking access to thousands across North Goa.
+    <main className="flex flex-col min-h-screen">
+      {/* 1. HERO CAROUSEL */}
+      <section
+        className="relative w-full h-[380px] sm:h-[450px] md:h-[540px] overflow-hidden group bg-slate-950"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {heroSlides.map((slide: any, index: number) => (
+          <div
+            key={index}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+            }`}
+          >
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{ backgroundImage: `url(${slide.image || '/images/placeholder.svg'})` }}
+            >
+              {/* Gradient Overlay tailored with deep Navy */}
+              <div className="absolute inset-0 bg-gradient-to-r from-navy-950/90 via-navy-900/75 to-transparent" />
+            </div>
+            <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col justify-center text-white md:w-3/4">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold tracking-wider uppercase mb-4 w-fit">
+                ★ Co-operative Banking Trust Since 1964
+              </span>
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold mb-3 md:mb-5 tracking-tight leading-tight drop-shadow-md">
+                {slide.heading}
+              </h2>
+              <p className="text-sm sm:text-base md:text-xl text-slate-200 mb-6 max-w-2xl leading-relaxed drop-shadow">
+                {slide.description}
               </p>
-
-              {/* Primary Actions */}
-              <div className="pt-2 flex flex-wrap items-center gap-4">
+              <div className="flex flex-wrap items-center gap-3">
                 <Link
                   href="/services"
-                  className="btn-editorial-primary inline-flex items-center gap-2"
+                  className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all shadow-lg hover:shadow-emerald-900/30 flex items-center gap-2"
                 >
-                  <span>Explore Banking Schemes</span>
-                  <ArrowRight className="w-4 h-4" />
+                  Explore Services <ArrowRight className="w-4 h-4" />
                 </Link>
-
                 <Link
-                  href="/bod"
-                  className="btn-editorial-secondary inline-flex items-center gap-2"
+                  href="/contacts"
+                  className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl transition-colors backdrop-blur-sm border border-white/20"
                 >
-                  <span>Our 60-Year Legacy</span>
+                  Contact Branch
                 </Link>
               </div>
-
-              {/* Trust Indicators */}
-              <div className="pt-6 grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-black/[0.05]">
-                <div className="flex items-center gap-2.5 text-xs font-sans text-charcoal-700">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                  <span>DICGC Assured Guarantees</span>
-                </div>
-                <div className="flex items-center gap-2.5 text-xs font-sans text-charcoal-700">
-                  <Users className="w-4 h-4 text-primary flex-shrink-0" />
-                  <span>100% Member-Owned</span>
-                </div>
-                <div className="flex items-center gap-2.5 text-xs font-sans text-charcoal-700">
-                  <Landmark className="w-4 h-4 text-tertiary flex-shrink-0" />
-                  <span>State-Grade Core Accounting</span>
-                </div>
-              </div>
             </div>
+          </div>
+        ))}
 
-            {/* Right Column: High-End Editorial Highlight Card */}
-            <div className="lg:col-span-5">
-              <div className="bg-surface-container-lowest rounded-2xl p-7 sm:p-9 shadow-editorial-float relative space-y-6">
-                
-                <div className="flex items-center justify-between gap-2 pb-4 border-b border-black/[0.04]">
-                  <div>
-                    <span className="archival-label block">Prime Interest Return</span>
-                    <h3 className="font-serif font-bold text-xl text-charcoal-900 mt-0.5">
-                      Monthly Deposit Scheme
-                    </h3>
-                  </div>
-                  <span className="px-2.5 py-1 bg-primary-50 text-primary text-[10px] font-label font-bold tracking-wider rounded-md uppercase">
-                    Fixed Deposits
-                  </span>
-                </div>
+        {/* Navigation Arrows */}
+        <button
+          onClick={prevSlide}
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-navy-900 text-white p-3 rounded-full transition-colors hidden md:block backdrop-blur-sm border border-white/10"
+          aria-label="Previous slide"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <button
+          onClick={nextSlide}
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/40 hover:bg-navy-900 text-white p-3 rounded-full transition-colors hidden md:block backdrop-blur-sm border border-white/10"
+          aria-label="Next slide"
+        >
+          <ChevronRight size={24} />
+        </button>
 
-                {/* Rate Showcase */}
-                <div className="space-y-4">
-                  <div className="p-4 rounded-xl bg-surface-container-low flex items-center justify-between">
-                    <div>
-                      <span className="text-xs text-charcoal-500 font-sans block">Senior Citizens Surplus, FD</span>
-                      <strong className="font-serif text-2xl font-bold text-primary">8.25% p.a.</strong>
-                    </div>
-                    <span className="text-xs font-label font-medium text-charcoal-600 bg-white px-2.5 py-1 rounded">
-                      365 – 555 Days
-                    </span>
-                  </div>
+        {/* Dot Indicators */}
+        <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex space-x-2.5">
+          {heroSlides.map((_: any, index: number) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`h-2.5 rounded-full transition-all duration-300 ${
+                index === currentSlide ? 'w-8 bg-amber-400' : 'w-2.5 bg-white/50 hover:bg-white/80'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      </section>
 
-                  <div className="p-4 rounded-xl bg-surface-container-low flex items-center justify-between">
-                    <div>
-                      <span className="text-xs text-charcoal-500 font-sans block">Agrarian & Gold Facility</span>
-                      <strong className="font-serif text-2xl font-bold text-tertiary">9.00% p.a.</strong>
-                    </div>
-                    <span className="text-xs font-label font-medium text-charcoal-600 bg-white px-2.5 py-1 rounded">
-                      Instant Disbursals
-                    </span>
-                  </div>
-                </div>
-
-                {/* Micro-Notice */}
-                <div className="p-3.5 rounded-lg bg-surface-container text-xs text-charcoal-600 font-sans leading-relaxed">
-                  <strong className="font-medium text-charcoal-900 block mb-0.5">Member Welfare Guarantee:</strong>
-                  Pigmy collection doorstep agents service 20+ rural zones daily, enabling real-time SMS and receipt vouchers.
-                </div>
-
-                <div className="pt-2">
-                  <Link
-                    href="/services"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold font-label tracking-wider uppercase text-primary hover:text-primary-hover group"
-                  >
-                    <span>Review Complete Tariff & Scheme Ticker</span>
-                    <span className="group-hover:translate-x-1 transition-transform">→</span>
-                  </Link>
-                </div>
-              </div>
+      {/* 2. STATS BAR: Navy Gradient with Gold/Amber Accents */}
+      <section className="bg-gradient-to-r from-navy-900 via-navy-800 to-navy-900 text-white py-10 md:py-12 border-y border-navy-700/50 shadow-inner">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div className="flex flex-col items-center p-3 rounded-xl bg-white/5 border border-white/5 hover:border-amber-400/30 transition-colors">
+              <Award className="w-8 h-8 mb-2 text-amber-400" />
+              <div className="text-3xl font-extrabold mb-1 tracking-tight text-white">60+</div>
+              <div className="text-xs sm:text-sm uppercase font-medium tracking-wider text-slate-300">Years of Service</div>
             </div>
-
+            <div className="flex flex-col items-center p-3 rounded-xl bg-white/5 border border-white/5 hover:border-amber-400/30 transition-colors">
+              <TrendingUp className="w-8 h-8 mb-2 text-emerald-400" />
+              <div className="text-3xl font-extrabold mb-1 tracking-tight text-white">₹125+ Cr</div>
+              <div className="text-xs sm:text-sm uppercase font-medium tracking-wider text-slate-300">Total Deposits</div>
+            </div>
+            <div className="flex flex-col items-center p-3 rounded-xl bg-white/5 border border-white/5 hover:border-amber-400/30 transition-colors">
+              <Users className="w-8 h-8 mb-2 text-amber-400" />
+              <div className="text-3xl font-extrabold mb-1 tracking-tight text-white">28,500+</div>
+              <div className="text-xs sm:text-sm uppercase font-medium tracking-wider text-slate-300">Happy Members</div>
+            </div>
+            <div className="flex flex-col items-center p-3 rounded-xl bg-white/5 border border-white/5 hover:border-amber-400/30 transition-colors">
+              <ShieldCheck className="w-8 h-8 mb-2 text-emerald-400" />
+              <div className="text-3xl font-extrabold mb-1 tracking-tight text-white">100%</div>
+              <div className="text-xs sm:text-sm uppercase font-medium tracking-wider text-slate-300">Customer Satisfaction</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 2. STATS BAR: Tonal Layers (No Lines) */}
-      <section className="py-10 bg-surface-container-low">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            
-            <div className="p-5 rounded-xl bg-surface-container-lowest space-y-1">
-              <span className="font-serif text-3xl sm:text-4xl font-bold text-primary block tracking-tight">
-                60+
+      {/* 3. ABOUT THE SOCIETY */}
+      <section className="py-16 md:py-24 bg-slate-50 border-b border-slate-200/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
+            <div className="w-full md:w-1/2">
+              <span className="inline-block px-3.5 py-1 mb-3 text-xs font-bold uppercase tracking-widest text-emerald-800 bg-emerald-100 rounded-full">
+                Serving the Community Since 1964
               </span>
-              <span className="font-label text-xs font-bold tracking-wider uppercase text-charcoal-900 block">
-                Years of Service
-              </span>
-              <span className="text-xs text-charcoal-500 font-sans block">
-                In uninterrupted legacy since 1964
-              </span>
-            </div>
-
-            <div className="p-5 rounded-xl bg-surface-container-lowest space-y-1">
-              <span className="font-serif text-3xl sm:text-4xl font-bold text-tertiary block tracking-tight">
-                ₹125+ Cr
-              </span>
-              <span className="font-label text-xs font-bold tracking-wider uppercase text-charcoal-900 block">
-                Aggregate Deposits
-              </span>
-              <span className="text-xs text-charcoal-500 font-sans block">
-                Entrusted by community savers
-              </span>
-            </div>
-
-            <div className="p-5 rounded-xl bg-surface-container-lowest space-y-1">
-              <span className="font-serif text-3xl sm:text-4xl font-bold text-primary block tracking-tight">
-                28,500+
-              </span>
-              <span className="font-label text-xs font-bold tracking-wider uppercase text-charcoal-900 block">
-                Active Savings Accounts
-              </span>
-              <span className="text-xs text-charcoal-500 font-sans block">
-                Household families served daily
-              </span>
-            </div>
-
-            <div className="p-5 rounded-xl bg-surface-container-lowest space-y-1">
-              <span className="font-serif text-3xl sm:text-4xl font-bold text-emerald-700 block tracking-tight">
-                Grade-A
-              </span>
-              <span className="font-label text-xs font-bold tracking-wider uppercase text-charcoal-900 block">
-                Audit Classification
-              </span>
-              <span className="text-xs text-charcoal-500 font-sans block">
-                State Registrar of Co-operatives
-              </span>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* 3. FOUNDATION & ETHOS: Scholarly Narrative with Archival Quote */}
-      <section className="py-16 lg:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            
-            {/* Left Archival Image Card */}
-            <div className="lg:col-span-5">
-              <div className="bg-surface-container-low rounded-2xl p-6 sm:p-8 space-y-5">
-                <div className="relative h-64 sm:h-72 w-full rounded-xl overflow-hidden bg-surface-container">
-                  <Image
-                    src="/images/activities/activity-10.svg"
-                    alt="Founding Assembly Archives 1964"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <span className="archival-label">Founding General Assembly — 1964</span>
-                  <blockquote className="font-serif italic text-sm text-charcoal-800 leading-relaxed">
-                    &ldquo;The true wealth of a village is not counted in gold, but in mutual faith and collective thrift.&rdquo;
-                  </blockquote>
-                  <span className="text-[11px] text-charcoal-500 font-label block">
-                    — Founder&apos;s Assembly Resolution, Bardez Taluka, 1964
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Narrative */}
-            <div className="lg:col-span-7 space-y-6">
-              <span className="archival-label">Our Foundation & Ethos</span>
-              
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal-900 tracking-tight leading-tight">
-                A Democratic Financial Institution Conceived by Agrarian Visionaries
+              <h2 className="text-3xl md:text-4xl font-extrabold text-navy-950 mb-6 tracking-tight leading-tight">
+                Rooted in the Soil, Committed to Your Financial Autonomy
               </h2>
-
-              <p className="text-sm sm:text-base text-charcoal-600 leading-relaxed font-sans">
-                Six decades ago, farmers, coconut plantation tenders, and small artisans in the villages of Parra, Verla, and Canca gathered under the shade of ancient banyan trees to forge a collective economic sanctuary. Free from usurious lending and urban neglect, the Society was registered to ensure that village savings remained directly invested in village soil.
+              <p className="text-slate-600 mb-4 leading-relaxed">
+                Parra Verla Canca Multipurpose Primary Agriculture Co-operative Society Ltd. has been the financial backbone of our community for over six decades. We believe in empowering our members through accessible, reliable, and transparent financial services tailored to local needs.
+              </p>
+              <p className="text-slate-600 mb-6 leading-relaxed">
+                Our cooperative model ensures that every member has a voice and shares in our collective success. We blend traditional values with modern banking convenience to provide a secure environment for your savings and investments.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
-                <div className="p-5 rounded-xl bg-surface-container-low space-y-2">
-                  <h4 className="font-serif font-bold text-base text-charcoal-900">
-                    Grassroots Governance
-                  </h4>
-                  <p className="text-xs text-charcoal-600 font-sans leading-relaxed">
-                    Board of Directors democratically elected from active agriculturalists and community visionaries every five years.
-                  </p>
-                </div>
+              <ul className="space-y-3.5 mb-8 text-slate-700">
+                <li className="flex items-start">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 mr-3 mt-1 flex-shrink-0" />
+                  <span>
+                    <strong className="text-slate-900">Financial Inclusion:</strong> Accessible banking for all segments of society.
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 mr-3 mt-1 flex-shrink-0" />
+                  <span>
+                    <strong className="text-slate-900">Community Development:</strong> Reinvesting in local infrastructure and initiatives.
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 mr-3 mt-1 flex-shrink-0" />
+                  <span>
+                    <strong className="text-slate-900">Responsible Savings:</strong> Secure deposit schemes with competitive returns.
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircle className="w-5 h-5 text-emerald-600 mr-3 mt-1 flex-shrink-0" />
+                  <span>
+                    <strong className="text-slate-900">Agricultural Development:</strong> Dedicated support for farmers and rural enterprises.
+                  </span>
+                </li>
+              </ul>
 
-                <div className="p-5 rounded-xl bg-surface-container-low space-y-2">
-                  <h4 className="font-serif font-bold text-base text-charcoal-900">
-                    Financial Inclusivity
-                  </h4>
-                  <p className="text-xs text-charcoal-600 font-sans leading-relaxed">
-                    Zero-fee savings accounts for senior women, rural youths, and tenant cultivators across Bardez taluka.
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <Link
-                  href="/bod"
-                  className="btn-editorial-tertiary"
-                >
-                  <span>Meet Our Democratic Board of Directors (2026–2031)</span>
-                  <span>→</span>
-                </Link>
-              </div>
+              <Link
+                href="/services"
+                className="inline-flex items-center px-6 py-3.5 bg-navy-900 hover:bg-navy-800 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
+              >
+                View Our Services <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
             </div>
 
+            <div className="w-full md:w-1/2">
+              <div className="relative h-[280px] sm:h-[360px] md:h-[420px] w-full rounded-2xl overflow-hidden shadow-xl border-4 border-white">
+                <Image
+                  src="/images/general/about.svg"
+                  alt="Community Banking"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 4. SCHEMES & SERVICES: Tonal Cards with Quick Request Links */}
-      <section className="py-16 lg:py-24 bg-surface-container-low">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          
-          <div className="max-w-3xl mb-12 lg:mb-16 space-y-3">
-            <span className="archival-label">Prudent Financial Instruments</span>
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal-900 tracking-tight">
-              Institutional Banking with Community Warmth
+      {/* 4. SERVICES SECTION */}
+      <section className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 md:mb-16">
+            <span className="inline-block px-4 py-1.5 mb-3 text-xs font-bold uppercase tracking-widest text-navy-800 bg-navy-50 border border-navy-200 rounded-full">
+              What We Offer
+            </span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-navy-950 mb-4 tracking-tight">
+              Our Banking & Financial Services
             </h2>
-            <p className="text-sm sm:text-base text-charcoal-600 font-sans leading-relaxed">
-              Engineered for agriculturalists, salaried professionals, senior citizens, and micro-entrepreneurs. Explore transparent deposit yields and flexible lending terms.
+            <p className="text-slate-600 max-w-2xl mx-auto">
+              Simple, secure and community-first banking — pick a scheme and request it in one click.
             </p>
+            <div className="w-24 h-1 bg-gradient-to-r from-navy-800 via-emerald-600 to-amber-500 mx-auto mt-6 rounded-full"></div>
           </div>
 
-          {/* Group 1: Deposits */}
-          <div className="space-y-6 mb-12">
-            <div className="flex items-center justify-between pb-2 border-b border-black/[0.04]">
-              <div className="flex items-center gap-3">
-                <h3 className="font-serif font-bold text-xl text-charcoal-900">
-                  Deposit & Wealth Accumulation Schemes
-                </h3>
-                <span className="hidden sm:inline-block px-2.5 py-0.5 bg-surface-container text-charcoal-700 text-[10px] font-label font-bold rounded">
-                  DICGC SAFEGUARDED
-                </span>
+          {/* Deposit Schemes */}
+          <div className="mb-14 md:mb-16">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-navy-700 to-navy-950 text-white flex items-center justify-center shadow-md">
+                <Landmark size={20} />
               </div>
-              <Link href="/services#deposits" className="text-xs font-semibold text-primary hover:underline">
-                View All Deposits →
-              </Link>
+              <h3 className="text-2xl font-bold text-slate-900">Deposit Schemes</h3>
+              <div className="flex-grow h-px bg-slate-200 ml-2 hidden sm:block" />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {depositSchemes.slice(0, 3).map((scheme) => (
-                <ServiceCard key={scheme.id} service={scheme} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {depositSchemes.slice(0, 3).map((service: any) => (
+                <ServiceCard key={service.id} service={service} accent="deposit" />
               ))}
             </div>
           </div>
 
-          {/* Group 2: Loans */}
-          <div className="space-y-6 mb-12">
-            <div className="flex items-center justify-between pb-2 border-b border-black/[0.04]">
-              <div className="flex items-center gap-3">
-                <h3 className="font-serif font-bold text-xl text-charcoal-900">
-                  Member Credit & Loan Schemes
-                </h3>
-                <span className="hidden sm:inline-block px-2.5 py-0.5 bg-surface-container text-charcoal-700 text-[10px] font-label font-bold rounded">
-                  SWIFT DISBURSAL
-                </span>
+          {/* Loan Schemes */}
+          <div className="mb-14 md:mb-16">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-900 text-white flex items-center justify-center shadow-md">
+                <Percent size={20} />
               </div>
-              <Link href="/services#loans" className="text-xs font-semibold text-primary hover:underline">
-                View All Credit Plans →
-              </Link>
+              <h3 className="text-2xl font-bold text-slate-900">Loan Schemes</h3>
+              <div className="flex-grow h-px bg-slate-200 ml-2 hidden sm:block" />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {loanSchemes.slice(0, 3).map((scheme) => (
-                <ServiceCard key={scheme.id} service={scheme} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {loanSchemes.slice(0, 3).map((service: any) => (
+                <ServiceCard key={service.id} service={service} accent="loan" />
               ))}
             </div>
           </div>
 
-          {/* Group 3: Utility Remittances */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-between pb-2 border-b border-black/[0.04]">
-              <div className="flex items-center gap-3">
-                <h3 className="font-serif font-bold text-xl text-charcoal-900">
-                  Utility Remittance & Digital Clearing
-                </h3>
-                <span className="hidden sm:inline-block px-2.5 py-0.5 bg-surface-container text-charcoal-700 text-[10px] font-label font-bold rounded">
-                  DIRECT TELLER COUNTERS
-                </span>
+          {/* Other Services */}
+          <div className="mb-14">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 text-white flex items-center justify-center shadow-md">
+                <Briefcase size={20} />
               </div>
-              <Link href="/services#other" className="text-xs font-semibold text-primary hover:underline">
-                View All Remittances →
-              </Link>
+              <h3 className="text-2xl font-bold text-slate-900">Other Services</h3>
+              <div className="flex-grow h-px bg-slate-200 ml-2 hidden sm:block" />
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {otherServices.map((service) => (
-                <ServiceCard key={service.id} service={service} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {otherServices.slice(0, 3).map((service: any) => (
+                <ServiceCard key={service.id} service={service} accent="other" />
               ))}
             </div>
           </div>
 
-          <div className="mt-12 text-center">
+          <div className="text-center mt-6">
             <Link
               href="/services"
-              className="btn-editorial-primary inline-flex items-center gap-2"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-navy-900 hover:bg-navy-800 text-white font-semibold rounded-xl transition-all shadow-md hover:shadow-lg"
             >
-              <span>View All Certified Schemes & Tariffs</span>
-              <ArrowRight className="w-4 h-4" />
+              View All Services <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-
         </div>
       </section>
 
-      {/* 5. SOCIAL ACHIEVEMENTS & CIVIC STEWARDSHIP */}
-      <section className="py-16 lg:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-            <div className="max-w-2xl space-y-2">
-              <span className="archival-label">Civic Stewardship</span>
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal-900 tracking-tight">
-                Social Impact & Community Dividends
+      {/* 5. SOCIAL ACHIEVEMENTS PREVIEW */}
+      <section className="py-16 md:py-24 bg-slate-50 border-t border-slate-200/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between md:items-end gap-6 mb-12">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-widest text-emerald-700 block mb-1">
+                Civic Stewardship
+              </span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-navy-950 mb-3 tracking-tight">
+                Social Achievements & Activities
               </h2>
-              <p className="text-sm sm:text-base text-charcoal-600 font-sans">
-                A co-operative&apos;s balance sheet is measured in human well-being. Each fiscal year, our common-good fund sponsors local village life.
-              </p>
+              <div className="w-24 h-1 bg-emerald-600 rounded-full"></div>
             </div>
-
             <Link
               href="/social-achievements"
-              className="btn-editorial-tertiary self-start md:self-end"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 border-2 border-navy-900 text-navy-900 font-semibold text-sm rounded-xl hover:bg-navy-900 hover:text-white transition-all whitespace-nowrap"
             >
-              <span>Explore All 12 Initiatives Archive</span>
-              <span>→</span>
+              View All Activities <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            {/* Feature Main Initiative */}
-            <div className="lg:col-span-7">
-              <div className="bg-surface-container-low rounded-2xl p-6 sm:p-8 flex flex-col h-full space-y-6">
-                <div className="relative h-64 sm:h-80 w-full rounded-xl overflow-hidden bg-surface-container">
-                  <Image
-                    src={activities[0].image}
-                    alt={activities[0].title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute top-4 left-4 px-3 py-1 bg-charcoal-900/80 backdrop-blur-md text-white rounded-full text-xs font-label">
-                    {activities[0].category}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {activities.slice(0, 8).map((activity: any) => (
+              <div
+                key={activity.id}
+                className="group relative h-48 md:h-64 rounded-xl overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200/60"
+                onClick={() => setSelectedActivity(activity)}
+              >
+                <Image
+                  src={activity.image || '/images/placeholder.svg'}
+                  alt={activity.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-navy-950/90 via-navy-950/40 to-transparent flex items-end p-4">
+                  <div>
+                    {activity.category && (
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 block mb-1">
+                        {activity.category}
+                      </span>
+                    )}
+                    <h4 className="text-white font-semibold text-sm leading-snug group-hover:text-amber-300 transition-colors line-clamp-2">
+                      {activity.title}
+                    </h4>
                   </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-xs text-charcoal-500 font-sans">
-                    <Calendar className="w-3.5 h-3.5 text-primary" />
-                    <span>{activities[0].date}</span>
-                    <span>•</span>
-                    <span className="font-medium text-charcoal-700">{activities[0].beneficiaries}</span>
-                  </div>
-
-                  <h3 className="font-serif font-bold text-xl sm:text-2xl text-charcoal-900 leading-tight">
-                    {activities[0].title}
-                  </h3>
-
-                  <p className="text-xs sm:text-sm text-charcoal-600 font-sans leading-relaxed">
-                    {activities[0].description}
-                  </p>
                 </div>
               </div>
-            </div>
-
-            {/* Secondary Initiatives Stack */}
-            <div className="lg:col-span-5 flex flex-col gap-6">
-              {activities.slice(1, 3).map((act) => (
-                <div key={act.id} className="bg-surface-container-low rounded-2xl p-6 flex flex-col sm:flex-row gap-5 items-start">
-                  <div className="relative w-full sm:w-36 h-32 rounded-xl overflow-hidden bg-surface-container flex-shrink-0">
-                    <Image
-                      src={act.image}
-                      alt={act.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="space-y-2 flex-grow">
-                    <span className="text-[10px] font-label font-bold uppercase tracking-wider text-tertiary block">
-                      {act.category}
-                    </span>
-                    <h4 className="font-serif font-bold text-base text-charcoal-900 leading-snug">
-                      {act.title}
-                    </h4>
-                    <p className="text-xs text-charcoal-600 font-sans line-clamp-3">
-                      {act.description}
-                    </p>
-                    <span className="text-[11px] text-charcoal-500 font-sans block pt-1">
-                      {act.date} • {act.beneficiaries}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
+            ))}
           </div>
-
         </div>
       </section>
 
-      {/* 6. DEMOCRATIC LEADERSHIP: Board of Directors (Tenure 2026–2031) */}
-      <section className="py-16 lg:py-24 bg-surface-container-low">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-            <div className="max-w-2xl space-y-2">
-              <span className="archival-label">Democratic Leadership</span>
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal-900 tracking-tight">
-                Board of Directors (Tenure 2026 – 2031)
-              </h2>
-              <p className="text-sm sm:text-base text-charcoal-600 font-sans">
-                Stewardship vetted through democratic membership ballot. Committed to fiduciary transparency, statutory compliance, and rural wealth conservation.
-              </p>
-            </div>
+      {/* 6. BOARD OF DIRECTORS PREVIEW */}
+      <section className="py-16 md:py-24 bg-white border-t border-slate-200/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12 md:mb-16">
+            <span className="text-xs font-bold uppercase tracking-widest text-navy-800 block mb-1">
+              Democratic Leadership
+            </span>
+            <h2 className="text-3xl md:text-4xl font-extrabold text-navy-950 mb-3 tracking-tight">
+              Our Board of Directors (2026 – 2031)
+            </h2>
+            <div className="w-24 h-1 bg-amber-500 mx-auto mb-8 rounded-full"></div>
 
+            {/* Group Photo */}
+            <div className="relative w-full max-w-4xl mx-auto h-[250px] sm:h-[300px] md:h-[450px] rounded-2xl overflow-hidden shadow-lg mb-12 border-4 border-slate-100">
+              <Image
+                src="/images/general/board-group.svg"
+                alt="Board of Directors Group Photo"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Top 3 Directors */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <DirectorCard
+              name="Shri. Example Chairman"
+              designation="Chairman"
+              image="/images/general/chairman.svg"
+            />
+            <DirectorCard
+              name="Smt. Example Vice Chair"
+              designation="Vice Chairman"
+              image="/images/general/vice-chair.svg"
+            />
+            <DirectorCard
+              name="Shri. Example Secretary"
+              designation="Secretary"
+              image="/images/general/secretary.svg"
+            />
+          </div>
+
+          <div className="text-center mt-12">
             <Link
               href="/bod"
-              className="btn-editorial-tertiary self-start md:self-end"
+              className="inline-flex items-center gap-2 px-6 py-3 border-2 border-navy-900 text-navy-900 font-semibold rounded-xl hover:bg-navy-900 hover:text-white transition-colors"
             >
-              <span>View Full Roster & By-Laws</span>
-              <span>→</span>
+              View All BoD&apos;s <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-
-          {/* 4 Core Leaders Preview */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {directors.slice(0, 4).map((d) => (
-              <div key={d.id} className="bg-surface-container-lowest rounded-xl p-5 space-y-4 hover:shadow-editorial-float transition-all">
-                <div className="relative w-full h-48 rounded-lg overflow-hidden bg-surface-container">
-                  <Image
-                    src={d.image}
-                    alt={d.name}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-charcoal-900/80 backdrop-blur-sm text-white text-[10px] font-label font-bold rounded">
-                    {d.designation}
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <h4 className="font-serif font-bold text-base text-charcoal-900">
-                    {d.name}
-                  </h4>
-                  <span className="text-xs text-primary font-medium font-sans block">
-                    {d.portfolio}
-                  </span>
-                  <p className="text-xs text-charcoal-500 font-sans line-clamp-2 pt-1">
-                    {d.bio}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
         </div>
       </section>
 
-      {/* 7. REGIONAL PRESENCE: Branch Network */}
-      <section className="py-16 lg:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          
-          <div className="max-w-2xl mb-12 space-y-2">
-            <span className="archival-label">Regional Presence</span>
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal-900 tracking-tight">
-              Branch Network & Banking Counters
-            </h2>
-            <p className="text-sm sm:text-base text-charcoal-600 font-sans">
-              Four interconnected, air-conditioned service branches equipped with secure locker vaults and direct teller counters.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {branches.map((b) => (
-              <div key={b.id} className="bg-surface-container-low rounded-xl p-6 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="font-label text-[10px] font-bold text-tertiary tracking-wider uppercase">
-                      {b.code}
-                    </span>
-                    <span className="text-[10px] font-label px-2 py-0.5 bg-surface-container text-charcoal-700 rounded font-semibold">
-                      {b.type}
-                    </span>
-                  </div>
-
-                  <h4 className="font-serif font-bold text-lg text-charcoal-900">
-                    {b.name}
-                  </h4>
-
-                  <div className="space-y-2 text-xs text-charcoal-600 font-sans pt-2">
-                    <div className="flex items-start gap-2">
-                      <MapPin className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
-                      <span>{b.address}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                      <span>{b.phone}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5 text-primary flex-shrink-0" />
-                      <span>{b.hours}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-black/[0.04]">
-                  <Link
-                    href={`/branches#branch-${b.id}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline"
-                  >
-                    <span>View Map & Vault Facilities</span>
-                    <span>→</span>
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-
-        </div>
-      </section>
-
-      {/* 8. MEMBER ASSISTANCE DESK / INQUIRY FORM */}
-      <section className="py-16 lg:py-24 bg-surface-container-low" id="inquire">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-            
-            {/* Left Context */}
-            <div className="lg:col-span-5 space-y-6">
-              <span className="archival-label">Member Assistance Desk</span>
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-charcoal-900 tracking-tight leading-tight">
-                Request a Banking Service or Inquire About Membership
-              </h2>
-
-              <p className="text-sm sm:text-base text-charcoal-600 font-sans leading-relaxed">
-                Submit your inquiry directly to our branch operations team. An authorized representative will contact you within one working banking day.
-              </p>
-
-              <div className="space-y-4 pt-2">
-                <div className="p-4 rounded-xl bg-surface-container-lowest space-y-1">
-                  <strong className="text-xs font-label uppercase tracking-wider text-charcoal-900 block font-semibold">
-                    Direct Representative Desk
-                  </strong>
-                  <span className="text-sm text-primary font-semibold block">+91 98765 43210</span>
-                  <span className="text-xs text-charcoal-500 font-sans block">Mon–Sat: 8:30 AM to 4:30 PM</span>
-                </div>
-
-                <div className="p-4 rounded-xl bg-surface-container-lowest space-y-1">
-                  <strong className="text-xs font-label uppercase tracking-wider text-charcoal-900 block font-semibold">
-                    Statutory Grievance Redressal
-                  </strong>
-                  <span className="text-xs text-charcoal-600 font-sans block">
-                    Written petitions can also be deposited at the Society Bhavan secretariat desk during normal business hours.
-                  </span>
-                </div>
+      {/* ACTIVITY MODAL */}
+      {selectedActivity && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+            onClick={() => setSelectedActivity(null)}
+          ></div>
+          <div className="relative bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl z-10 border border-slate-200">
+            <button
+              onClick={() => setSelectedActivity(null)}
+              className="absolute top-4 right-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full p-2 z-20 transition-colors shadow"
+              aria-label="Close modal"
+            >
+              <X size={20} />
+            </button>
+            <div className="relative h-64 sm:h-80 w-full bg-slate-100">
+              <Image
+                src={selectedActivity.image || '/images/placeholder.svg'}
+                alt={selectedActivity.title}
+                fill
+                className="object-cover"
+              />
+              <div className="absolute bottom-4 left-4">
+                <span className="px-3 py-1 bg-navy-950/80 backdrop-blur-md text-amber-400 text-xs font-bold rounded-full uppercase tracking-wider">
+                  {selectedActivity.category || 'Initiative'}
+                </span>
               </div>
             </div>
-
-            {/* Right Form Card */}
-            <div className="lg:col-span-7">
-              <div className="bg-surface-container-lowest rounded-2xl p-7 sm:p-10 shadow-editorial-float">
-                
-                {formSubmitted ? (
-                  <div className="py-10 text-center space-y-4">
-                    <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto">
-                      <CheckCircle2 className="w-8 h-8" />
-                    </div>
-                    <h3 className="font-serif font-bold text-2xl text-charcoal-900">
-                      Official Request Received
-                    </h3>
-                    <p className="text-sm text-charcoal-600 max-w-md mx-auto font-sans leading-relaxed">
-                      Thank you, <strong className="text-charcoal-900">{formName}</strong>. Your inquiry for <strong className="text-charcoal-900">{formService}</strong> at <strong className="text-charcoal-900">{formBranch}</strong> has been logged into our member desk ledger. Our representative will call you shortly at <strong className="text-charcoal-900">{formPhone}</strong>.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setFormSubmitted(false)}
-                      className="btn-editorial-secondary mt-4"
-                    >
-                      Submit Another Ingestion Request
-                    </button>
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-5">
-                    <div>
-                      <span className="archival-label block mb-1">Official Member Ingestion</span>
-                      <h3 className="font-serif font-bold text-xl text-charcoal-900">
-                        Formal Service Requisition Form
-                      </h3>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-label font-semibold text-charcoal-700 uppercase tracking-wider mb-1.5">
-                          Full Legal Name *
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={formName}
-                          onChange={(e) => setFormName(e.target.value)}
-                          placeholder="e.g. Maria Rosario Fernandes"
-                          className="editorial-input"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-label font-semibold text-charcoal-700 uppercase tracking-wider mb-1.5">
-                          Contact Mobile Number *
-                        </label>
-                        <input
-                          type="tel"
-                          required
-                          value={formPhone}
-                          onChange={(e) => setFormPhone(e.target.value)}
-                          placeholder="e.g. +91 98220 12345"
-                          className="editorial-input"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-label font-semibold text-charcoal-700 uppercase tracking-wider mb-1.5">
-                          Select Service Scheme
-                        </label>
-                        <select
-                          value={formService}
-                          onChange={(e) => setFormService(e.target.value)}
-                          className="editorial-input"
-                        >
-                          {serviceOptions.map((group) => (
-                            <optgroup key={group.group} label={group.group}>
-                              {group.options.map((opt) => (
-                                <option key={opt.value} value={opt.value}>
-                                  {opt.label}
-                                </option>
-                              ))}
-                            </optgroup>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-label font-semibold text-charcoal-700 uppercase tracking-wider mb-1.5">
-                          Preferred Branch Counter
-                        </label>
-                        <select
-                          value={formBranch}
-                          onChange={(e) => setFormBranch(e.target.value)}
-                          className="editorial-input"
-                        >
-                          {branches.map((b) => (
-                            <option key={b.id} value={b.name}>
-                              {b.name} ({b.type})
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-label font-semibold text-charcoal-700 uppercase tracking-wider mb-1.5">
-                        Specific Requirements or Inquiries (Optional)
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={formNotes}
-                        onChange={(e) => setFormNotes(e.target.value)}
-                        placeholder="Please state tenure preference, loan amount requirement, or doorstep Pigmy collection address..."
-                        className="editorial-input resize-none"
-                      />
-                    </div>
-
-                    <div className="pt-2">
-                      <button
-                        type="submit"
-                        className="w-full btn-editorial-primary flex items-center justify-center gap-2"
-                      >
-                        <Send className="w-4 h-4" />
-                        <span>Submit Official Inquiry to Secretariat</span>
-                      </button>
-                    </div>
-
-                    <p className="text-[11px] text-charcoal-400 font-sans text-center">
-                      Submissions are securely stored and reviewed solely by authorized society officers.
-                    </p>
-                  </form>
+            <div className="p-6 md:p-8">
+              <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500 mb-3">
+                <span>{selectedActivity.date}</span>
+                {selectedActivity.beneficiaries && (
+                  <>
+                    <span>•</span>
+                    <span className="text-emerald-700 font-bold">{selectedActivity.beneficiaries}</span>
+                  </>
                 )}
-
               </div>
+              <h3 className="text-2xl md:text-3xl font-extrabold text-navy-950 mb-4 leading-tight">
+                {selectedActivity.title}
+              </h3>
+              <p className="text-slate-600 leading-relaxed text-base">
+                {selectedActivity.description}
+              </p>
             </div>
-
           </div>
         </div>
-      </section>
-
-    </div>
+      )}
+    </main>
   );
 }

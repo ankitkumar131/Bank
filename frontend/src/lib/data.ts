@@ -516,10 +516,10 @@ export const activities: Activity[] = [
 // Navigation links
 // --------------------------------------------------
 export const navLinks = [
-  { label: 'Our Saga & Mission', href: '/' },
-  { label: 'Schemes & Services', href: '/services' },
-  { label: 'Social Impact', href: '/social-achievements' },
-  { label: 'Governance & BoD (2026–2031)', href: '/bod' },
-  { label: 'Branch Network', href: '/branches' },
+  { label: 'Home', href: '/' },
+  { label: 'BoD', href: '/bod' },
+  { label: 'Branches', href: '/branches' },
+  { label: 'Services', href: '/services' },
+  { label: 'Social Achievements', href: '/social-achievements' },
   { label: 'Contacts', href: '/contacts' },
 ];
